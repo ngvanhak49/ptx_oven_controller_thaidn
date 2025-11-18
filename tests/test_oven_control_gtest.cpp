@@ -66,6 +66,7 @@ TEST_F(OvenControlTest, HysteresisControl) {
 
     // Start heating (below ON threshold: 175°C)
     mock_set_signal_mv(mv_for_temp(5000, 160.0f));
+    ptx_oven_control_update();
 
     const ptx_oven_status_t* st = ptx_oven_get_status();
     EXPECT_TRUE(st->gas_on) << "Heating should start below ON threshold";
@@ -79,9 +80,9 @@ TEST_F(OvenControlTest, HysteresisControl) {
 
     // Move above OFF threshold (185°C) - need to fill filter with new values
     mock_set_signal_mv(mv_for_temp(5000, 186.0f));
-    
-    st = ptx_oven_get_status();
-    
+    ptx_oven_control_update();
+
+    st = ptx_oven_get_status();    
     EXPECT_FALSE(st->gas_on) << "Gas should turn OFF above OFF threshold";
     EXPECT_FALSE(st->igniter_on) << "Igniter should turn OFF above OFF threshold";
 }
